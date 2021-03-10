@@ -1,6 +1,6 @@
 var os = require('os'),
 Q = require('q'),
-urls = require('./outfile.json'),
+urls = require('./urls.json'),
 cheerio = require('cheerio'),
 request = require('request');
 const puppeteer = require('puppeteer');
