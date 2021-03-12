@@ -8,6 +8,12 @@ const { execSync } = require('child_process');
 const fs = require("fs");
 
 
+
+function sleep(delay) {
+    var start = new Date().getTime();
+    while (new Date().getTime() < start + delay);
+}
+
 async function importHotelInfo(restInfo){
 	if(os.platform() == "linux"){
 		execSync('apt-get update -y && apt-get install libxss1 -y', (error, stdout, stderr)=>{
@@ -218,22 +224,29 @@ async function importHotelInfo(restInfo){
 // let finalOutJson = [];
 async function processRestInfo(){
 
-	urls = urls.slice(0,10);
+	urls = urls.slice(0,50);
 	// urls = ["https://www.zomato.com/ncr/noida-social-sector-18-noida"];
 
 	for(let start_index=0;start_index<urls.length;start_index++){
 		let restInfo = {};
 		console.log(`Step ${start_index+1} of ${urls.length}`);
 		restInfo.url = urls[start_index];
-		let info = await importHotelInfo(restInfo);
-		console.log(`Total review count : ${info.noOfReviews}`);
-		// info.allReviews = await importReviewInfo(info)
-		// if(info.noOfReviews >0){
-		// 	info.url = info.url + '?'+info.noOfReviews;
-		// 	readAndAppend('review.json',info.url)
-		// }
+		sleep(1000)
+		try{
+			let info = await importHotelInfo(restInfo);
+			console.log(`Total review count : ${info.noOfReviews}`);
+			// info.allReviews = await importReviewInfo(info)
+			if(info.noOfReviews >0){
+				// info.url = info.url + '?'+info.noOfReviews;
+				// readAndAppend('review_urls.json',info.url)
+				readAndAppend('restIds.json',info.restId)
+			}
 
-		readAndAppend('out.json',info);
+			readAndAppend('out.json',info);
+		}catch(e){
+			continue;
+		}
+		
 		
 	}
 
